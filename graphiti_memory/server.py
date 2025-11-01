@@ -293,7 +293,7 @@ def handle_tool_call(request_id, tool_name, arguments):
 
             with neo4j_driver.session() as session:
                 # Create a Memory node with content and metadata
-                timestamp = datetime.datetime.utcnow().isoformat()
+                timestamp = datetime.datetime.now(datetime.UTC).isoformat()
                 cypher = """
                 CREATE (m:Memory {
                     content: $content,
@@ -314,7 +314,7 @@ def handle_tool_call(request_id, tool_name, arguments):
                     node = record['m']
                     result_text = json.dumps({
                         "success": True,
-                        "node_id": str(node.id),
+                        "node_id": str(node.element_id),
                         "content": content,
                         "timestamp": timestamp,
                         "metadata": metadata,
@@ -350,7 +350,7 @@ def handle_tool_call(request_id, tool_name, arguments):
                 for record in result:
                     node = record['n']
                     nodes.append({
-                        "id": str(node.id),
+                        "id": str(node.element_id),
                         "labels": list(node.labels),
                         "properties": dict(node)
                     })
