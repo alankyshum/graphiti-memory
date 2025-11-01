@@ -233,6 +233,25 @@ def handle_tools_list(request_id):
                 "properties": {},
                 "required": []
             }
+        },
+        {
+            "name": "add_memory_episode",
+            "description": "Add a new episode or memory to the knowledge graph",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "description": "Content to store in memory"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Optional metadata (tags, timestamp, etc.)",
+                        "additionalProperties": True
+                    }
+                },
+                "required": ["content"]
+            }
         }
     ]
 
