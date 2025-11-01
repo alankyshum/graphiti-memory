@@ -83,51 +83,132 @@ Add to your MCP client configuration file (e.g., Claude Desktop config):
 
 ## Available Tools
 
-### 1. search_memory_nodes
+### 1. add_memory
 
-Search for nodes in the Neo4j knowledge graph.
+Add an episode or memory to the knowledge graph. This is the primary way to add information.
 
 **Example**:
-```python
+```json
+{
+  "name": "add_memory",
+  "arguments": {
+    "name": "Project Discussion",
+    "episode_body": "We discussed the new AI feature roadmap for Q2. Focus on improving entity extraction.",
+    "source": "text",
+    "group_id": "project-alpha"
+  }
+}
+```
+
+**Parameters**:
+- `name`: Name of the episode (required)
+- `episode_body`: Content to store - text, message, or JSON (required)
+- `source`: Type of content - "text", "message", or "json" (default: "text")
+- `group_id`: Optional namespace for organizing data
+- `source_description`: Optional description
+
+### 2. search_memory_nodes
+
+Search for nodes (entities) in the knowledge graph using natural language.
+
+**Example**:
+```json
 {
   "name": "search_memory_nodes",
   "arguments": {
-    "query": "machine learning"
+    "query": "machine learning",
+    "max_nodes": 10
   }
 }
 ```
 
-**Returns**: List of nodes with IDs, labels, and properties.
+**Returns**: List of nodes with UUID, name, summary, labels, and timestamps.
 
-### 2. search_memory_facts
+### 3. search_memory_facts
 
-Search for facts and relationships in the knowledge graph.
+Search for facts (relationships) between entities in the knowledge graph.
 
 **Example**:
-```python
+```json
 {
   "name": "search_memory_facts",
   "arguments": {
-    "query": "related concepts"
+    "query": "what technologies are related to AI",
+    "max_facts": 10
   }
 }
 ```
 
-**Returns**: Fact triples (subject-predicate-object) with metadata.
+**Returns**: List of fact triples with source, target, and relationship details.
 
-### 3. test_neo4j_auth
+### 4. get_episodes
 
-Test Neo4j authentication and return connection diagnostics.
+Retrieve recent episodes for a specific group.
 
 **Example**:
-```python
+```json
 {
-  "name": "test_neo4j_auth",
-  "arguments": {}
+  "name": "get_episodes",
+  "arguments": {
+    "group_id": "project-alpha",
+    "last_n": 10
+  }
 }
 ```
 
-**Returns**: Connection status, URI, user, and diagnostic information.
+### 5. delete_episode
+
+Delete an episode from the knowledge graph.
+
+**Example**:
+```json
+{
+  "name": "delete_episode",
+  "arguments": {
+    "uuid": "episode-uuid-here"
+  }
+}
+```
+
+### 6. delete_entity_edge
+
+Delete a fact (entity edge) from the knowledge graph.
+
+**Example**:
+```json
+{
+  "name": "delete_entity_edge",
+  "arguments": {
+    "uuid": "edge-uuid-here"
+  }
+}
+```
+
+### 7. get_entity_edge
+
+Retrieve a specific entity edge by UUID.
+
+**Example**:
+```json
+{
+  "name": "get_entity_edge",
+  "arguments": {
+    "uuid": "edge-uuid-here"
+  }
+}
+```
+
+### 8. clear_graph
+
+Clear all data from the knowledge graph (DESTRUCTIVE).
+
+**Example**:
+```json
+{
+  "name": "clear_graph",
+  "arguments": {}
+}
+```
 
 ## Usage
 
@@ -143,12 +224,16 @@ Configure in `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "env": {
         "NEO4J_URI": "neo4j://127.0.0.1:7687",
         "NEO4J_USER": "neo4j",
-        "NEO4J_PASSWORD": "your-password"
+        "NEO4J_PASSWORD": "your-password",
+        "OPENAI_API_KEY": "your-openai-key-here",
+        "GRAPHITI_GROUP_ID": "default"
       }
     }
   }
 }
 ```
+
+**Note**: `OPENAI_API_KEY` is optional. Without it, entity extraction will be limited but the server will still work.
 
 ### Standalone Testing
 
