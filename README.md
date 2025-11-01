@@ -4,10 +4,13 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that pr
 
 ## Features
 
-- 🧠 **Memory Node Search**: Query nodes in your knowledge graph
-- 🔗 **Fact Search**: Search for relationships and facts
-- 🔍 **Connection Diagnostics**: Test Neo4j authentication and connectivity
-- 📊 **Real-time Data**: Returns actual data from your Neo4j database
+- 📝 **Add Memories**: Store episodes and information in the knowledge graph with automatic entity extraction
+- 🧠 **Search Nodes**: Query entities in your knowledge graph using natural language
+- 🔗 **Search Facts**: Find relationships and connections between entities
+- 📚 **Retrieve Episodes**: Get historical episodes and memories
+- 🗑️ **Management Tools**: Delete episodes, edges, and clear the graph
+- 🤖 **AI-Powered**: Optional OpenAI integration for enhanced entity extraction
+- 📊 **Real-time Data**: Direct connection to your Neo4j database
 - 🛠️ **Built-in Diagnostics**: Comprehensive error messages and troubleshooting
 
 ## Installation
@@ -23,7 +26,7 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that pr
    neo4j start
    ```
 
-2. **Python 3.8+**: Required for the MCP server
+2. **Python 3.10+**: Required for the MCP server
 
 ### Install from PyPI
 
@@ -43,7 +46,7 @@ pip install -e .
 
 ### MCP Configuration
 
-Add to your MCP client configuration file (e.g., `~/.captain/mcp.json` or Claude Desktop config):
+Add to your MCP client configuration file (e.g., Claude Desktop config):
 
 ```json
 {
@@ -53,7 +56,9 @@ Add to your MCP client configuration file (e.g., `~/.captain/mcp.json` or Claude
       "env": {
         "NEO4J_URI": "neo4j://127.0.0.1:7687",
         "NEO4J_USER": "neo4j",
-        "NEO4J_PASSWORD": "your-password-here"
+        "NEO4J_PASSWORD": "your-password-here",
+        "OPENAI_API_KEY": "your-openai-key-here",
+        "GRAPHITI_GROUP_ID": "default"
       }
     }
   }
@@ -125,18 +130,6 @@ Test Neo4j authentication and return connection diagnostics.
 **Returns**: Connection status, URI, user, and diagnostic information.
 
 ## Usage
-
-### With Captain (LinkedIn's MCP Client)
-
-After installation and configuration, the tools are automatically available:
-
-```python
-# Test connection
-mcp_captain_graphiti-memory_test_neo4j_auth({})
-
-# Search for nodes
-mcp_captain_graphiti-memory_search_memory_nodes({"query": "test"})
-```
 
 ### With Claude Desktop
 
@@ -222,7 +215,7 @@ EOF
 ## Architecture
 
 ```
-MCP Client (Captain/Claude)
+MCP Client (Claude Desktop / Cline / etc.)
     ↓
 Graphiti-Memory Server
     ↓
@@ -260,4 +253,4 @@ MIT License - see LICENSE file for details.
 Built for use with:
 - [Model Context Protocol (MCP)](https://modelcontextprotocol.io)
 - [Neo4j](https://neo4j.com)
-- [Captain](https://github.com/linkedin/captain) - LinkedIn's MCP client
+- [Graphiti](https://github.com/getzep/graphiti) - Knowledge graph framework
