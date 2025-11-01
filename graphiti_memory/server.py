@@ -282,6 +282,60 @@ def handle_tool_call(request_id, tool_name, arguments):
             "message": "Authentication successful!" if success else f"Authentication failed: {auth_error}"
         })
 
+    elif neo4j_connected and tool_name == "add_memory_episode":
+        # Add a new memory/episode to Neo4j
+        content = arguments.get("content", "")
+        metadata = arguments.get("metadata", {})
+
+        try:
+            from neo4j import GraphDatabase
+            import datetime
+
+            with neo4j_driver.session() as session:
+                # Create a Memory node with content and metadata
+                timestamp = datetime.datetime.utcnow().isoformat()
+                cypher = """
+                CREATE (m:Memory {
+                    content: $content,
+                    timestamp: $timestamp,
+                    metadata: $metadata_json
+                })
+                RETURN m
+                """
+                result = session.run(
+                    cypher,
+                    content=content,
+                    timestamp=timestamp,
+                    metadata_json=json.dumps(metadata)
+                )
+
+                record = result.single()
+                if record:
+                    node = record['m']
+                    result_text = json.dumps({
+                        "success": True,
+                        "node_id": str(node.id),
+                        "content": content,
+                        "timestamp": timestamp,
+                        "metadata": metadata,
+                        "message": "Memory added successfully",
+                        "source": "REAL Neo4j database"
+                    })
+                else:
+                    result_text = json.dumps({
+                        "success": False,
+                        "error": "Failed to create node"
+                    })
+
+        except Exception as e:
+            logger.error(f"Add memory failed: {e}")
+            result_text = json.dumps({
+                "success": False,
+                "error": str(e),
+                "content": content,
+                "source": "Neo4j write failed"
+            })
+
     elif neo4j_connected and tool_name == "search_memory_nodes":
         # Try real Neo4j query
         query = arguments.get("query", "")
